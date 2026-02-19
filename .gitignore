@@ -124,6 +124,7 @@ dmypy.json
 
 # Downloaded files
 downloads/
+test_downloads/
 *.mp4
 *.mp3
 *.jpg
