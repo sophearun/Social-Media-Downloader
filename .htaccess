@@ -1,0 +1,21 @@
+Options -Indexes
+RewriteEngine On
+
+# ── Clean .php extensions ──────────────────────────────────────
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# ── Admin routes ───────────────────────────────────────────────
+RewriteRule ^admin/users/add/?$              admin/users.php?action=add       [L,QSA]
+RewriteRule ^admin/users/edit/([0-9]+)/?$    admin/users.php?action=edit&id=$1 [L,QSA]
+RewriteRule ^admin/users/delete/([0-9]+)/?$  admin/users.php?action=delete&id=$1 [L,QSA]
+RewriteRule ^admin/users/?$                  admin/users.php                  [L,QSA]
+RewriteRule ^admin/?$                        admin/index.php                  [L,QSA]
+
+# ── Auth / profile routes ──────────────────────────────────────
+RewriteRule ^profile/edit/?$  profile-edit.php  [L,QSA]
+RewriteRule ^profile/?$       profile.php       [L,QSA]
+RewriteRule ^login/?$         login.php         [L,QSA]
+RewriteRule ^logout/?$        logout.php        [L,QSA]
+RewriteRule ^register/?$      register.php      [L,QSA]
