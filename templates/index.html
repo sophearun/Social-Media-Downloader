@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Downloader — Multi-Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                colors: {
+                    primary: { DEFAULT: '#8b5cf6', hover: '#a78bfa', dark: '#7c3aed' },
+                    accent: { DEFAULT: '#22d3ee', hover: '#67e8f9' },
+                    surface: { DEFAULT: '#0f172a', card: '#1e293b', input: '#0f172a' },
+                },
+                fontFamily: {
+                    sans: ['Inter', 'Battambang', 'Khmer', 'system-ui', 'sans-serif'],
+                    display: ['Koulen', 'Battambang', 'Khmer', 'sans-serif'],
+                },
+                borderRadius: { '2xl': '16px', xl: '12px', lg: '10px' },
+            }
+        }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Khmer&family=Koulen&family=Battambang:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="bg-animation"><div class="bg-circle c1"></div><div class="bg-circle c2"></div><div class="bg-circle c3"></div></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-download"></i></div>
+                <div class="logo-text">
+                    <h1>Social Media Downloader</h1>
+                    <p class="subtitle">កម្មវិធីទាញយកវីដេអូពីបណ្តាញសង្គម</p>
+                </div>
+            </div>
+            <button id="donateBtn" class="donate-btn" title="ជួយគាំទ្រ">
+                <i class="fas fa-heart"></i>
+                <span>Donate</span>
+            </button>
+            <div class="platform-icons">
+                <span class="pi" style="color:#fe2c55" title="TikTok"><i class="fab fa-tiktok"></i></span>
+                <span class="pi" style="color:#ff0000" title="YouTube"><i class="fab fa-youtube"></i></span>
+                <span class="pi" style="color:#e4405f" title="Instagram"><i class="fab fa-instagram"></i></span>
+                <span class="pi" style="color:#1877f2" title="Facebook"><i class="fab fa-facebook"></i></span>
+                <span class="pi" style="color:#fff" title="X / Twitter"><i class="fab fa-x-twitter"></i></span>
+                <span class="pi" style="color:#bd081c" title="Pinterest"><i class="fab fa-pinterest"></i></span>
+                <span class="pi" style="color:#00f0ff" title="Douyin"><i class="fas fa-music"></i></span>
+                <span class="pi" style="color:#ff2442" title="Xiaohongshu"><i class="fas fa-book"></i></span>
+                <span class="pi" style="color:#000" title="Threads"><i class="fab fa-threads"></i></span>
+                <span class="pi" style="color:#0077b5" title="LinkedIn"><i class="fab fa-linkedin"></i></span>
+        
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="download"><i class="fas fa-download"></i><span>ទាញយក</span></button>
+            <button class="tab-btn" data-tab="profile"><i class="fas fa-user-circle"></i><span>Profile Grabber</span></button>
+            <button class="tab-btn" data-tab="watermark"><i class="fas fa-eraser"></i><span>Watermark Remover</span></button>
+            <button class="tab-btn" data-tab="sora2"><i class="fas fa-wand-magic-sparkles"></i><span>Sora2 Download</span></button>
+            <button class="tab-btn" data-tab="search"><i class="fas fa-search"></i><span>Search</span></button>
+        </nav>
+
+        <!-- ===== TAB 1: Single Download ===== -->
+        <div id="tab-download" class="tab-content active">
+            <section class="input-section">
+                <div class="input-card">
+                    <div class="input-wrapper">
+                        <div class="input-icon"><i class="fas fa-link"></i></div>
+                        <input type="text" id="urlInput" placeholder="បិទភ្ជាប់តំណវីដេអូ (TikTok, YouTube, IG, FB, X, Douyin, Xiaohongshu, Bilibili...)" autocomplete="off">
+                        <button id="pasteBtn" class="icon-btn" title="Paste"><i class="fas fa-paste"></i></button>
+                        <button id="clearBtn" class="icon-btn" title="Clear" style="display:none"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div id="platformBadge" class="detected-platform" style="display:none">
+                        <i id="platformBadgeIcon" class=""></i> <span id="platformBadgeName"></span>
+                    </div>
+                    <button id="fetchBtn" class="primary-btn"><i class="fas fa-search"></i><span>ស្វែងរកវីដេអូ</span></button>
+                </div>
+            </section>
+
+            <section id="loadingSection" class="state-section" style="display:none">
+                <div class="state-card">
+                    <div class="spinner"><div class="spinner-ring"></div><i class="fas fa-download spinner-icon"></i></div>
+                    <p class="state-text">កំពុងស្វែងរកវីដេអូ...</p>
+                </div>
+            </section>
+
+            <section id="errorSection" class="state-section" style="display:none">
+                <div class="state-card error">
+                    <div class="state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <p id="errorMessage" class="state-text"></p>
+                    <button id="retryBtn" class="secondary-btn"><i class="fas fa-redo"></i> ព្យាយាមម្តងទៀត</button>
+                </div>
+            </section>
+
+            <section id="videoSection" class="video-section" style="display:none">
+                <div class="video-card">
+                    <div class="video-preview">
+                        <img id="videoThumbnail" src="" alt="">
+                        <div class="video-overlay"><div class="play-icon"><i class="fas fa-play"></i></div></div>
+                        <span id="videoDuration" class="dur-badge"></span>
+                        <span id="videoPlatformBadge" class="plat-badge"></span>
+                    </div>
+                    <div class="video-info">
+                        <h3 id="videoTitle" class="video-title"></h3>
+                        <div class="video-meta">
+                            <span class="meta"><i class="fas fa-user"></i><span id="videoAuthor"></span></span>
+                            <span class="meta"><i class="fas fa-eye"></i><span id="videoViews"></span></span>
+                            <span class="meta"><i class="fas fa-heart"></i><span id="videoLikes"></span></span>
+                            <span class="meta"><i class="fas fa-comment"></i><span id="videoComments"></span></span>
+                        </div>
+                        <div class="dl-buttons">
+                            <button id="dlVideoBtn" class="dl-btn video"><i class="fas fa-video"></i><div class="btn-t"><span class="bl">ទាញយកវីដេអូ</span><span class="bs">MP4 - HD</span></div></button>
+                            <button id="dlAudioBtn" class="dl-btn audio"><i class="fas fa-music"></i><div class="btn-t"><span class="bl">ទាញយកសម្លេង</span><span class="bs">MP3 - 192kbps</span></div></button>
+                        </div>
+                        <!-- FFmpeg Quality & Format Options -->
+                        <div class="ffmpeg-options" id="ffmpegOptions">
+                            <div class="option-row">
+                                <div class="option-group">
+                                    <label><i class="fas fa-sliders-h"></i> គុណភាព</label>
+                                    <select id="qualitySelect">
+                                        <option value="best" selected>Best</option>
+                                        <option value="1080p">1080p (Full HD)</option>
+                                        <option value="720p">720p (HD)</option>
+                                        <option value="480p">480p (SD)</option>
+                                        <option value="360p">360p</option>
+                                        <option value="1440p">1440p (2K)</option>
+                                        <option value="4k">4K (Ultra HD)</option>
+                                    </select>
+                                </div>
+                                <div class="option-group">
+                                    <label><i class="fas fa-file-video"></i> ទម្រង់</label>
+                                    <select id="formatSelect">
+                                        <option value="">Default</option>
+                                        <optgroup label="Video">
+                                            <option value="mp4">MP4</option>
+                                            <option value="mkv">MKV</option>
+                                            <option value="webm">WebM</option>
+                                            <option value="avi">AVI</option>
+                                            <option value="mov">MOV</option>
+                                        </optgroup>
+                                        <optgroup label="Audio">
+                                            <option value="mp3">MP3</option>
+                                            <option value="wav">WAV</option>
+                                            <option value="flac">FLAC</option>
+                                            <option value="aac">AAC</option>
+                                            <option value="ogg">OGG</option>
+                                            <option value="m4a">M4A</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="ffmpegStatus" class="ffmpeg-status"></div>
+                        </div>
+                        <button id="getCommentsBtn" class="secondary-btn comments-btn"><i class="fas fa-comments"></i> Comments Scraping</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comments Panel -->
+            <section id="commentsSection" class="comments-section" style="display:none">
+                <div class="comments-card">
+                    <div class="comments-header"><h4><i class="fas fa-comments"></i> Comments (<span id="commentCount">0</span>)</h4>
+                        <button id="closeCommentsBtn" class="icon-btn"><i class="fas fa-times"></i></button></div>
+                    <div id="commentsList" class="comments-list"></div>
+                </div>
+            </section>
+
+            <section id="progressSection" class="state-section" style="display:none">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <div class="prog-icon dl"><i class="fas fa-download"></i></div>
+                        <div class="prog-info"><h4 id="progressTitle">កំពុងទាញយក...</h4><p id="progressStatus" class="prog-sub"></p></div>
+                        <span id="progressPercent" class="prog-pct">0%</span>
+                    </div>
+                    <div class="prog-bar-wrap"><div id="progressBar" class="prog-bar" style="width:0%"></div></div>
+                </div>
+            </section>
+
+            <section id="completeSection" class="state-section" style="display:none">
+                <div class="state-card success">
+                    <div class="state-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3>ទាញយកបានជោគជ័យ!</h3>
+                    <a id="downloadLink" href="#" class="primary-btn save"><i class="fas fa-save"></i> រក្សាទុកឯកសារ</a>
+                    <button id="newDownloadBtn" class="secondary-btn"><i class="fas fa-plus"></i> ទាញយកថ្មី</button>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section class="features-section">
+                <h3 class="section-title">Features</h3>
+                <div class="feature-tabs">
+                    <button class="feat-tab active" data-feat="basic">Basic</button>
+                    <button class="feat-tab" data-feat="pro">Pro</button>
+                    <button class="feat-tab" data-feat="advanced">Advanced</button>
+                </div>
+                <div id="feat-basic" class="features-grid feat-content active">
+                    <div class="fcard"><div class="ficon"><i class="fas fa-hd"></i></div><h4>HD Video Download</h4><p>ទាញយកវីដេអូគុណភាពខ្ពស់</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-image"></i></div><h4>Photo Download</h4><p>ទាញយករូបភាពពីគ្រប់វេទិកា</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-layer-group"></i></div><h4>Bulk Download</h4><p>ទាញយកច្រើនក្នុងពេលតែមួយ</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-check-square"></i></div><h4>Selective Download</h4><p>ជ្រើសរើសវីដេអូដែលចង់ទាញយក</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-chart-line"></i></div><h4>View Stats</h4><p>Likes, Comments, Views</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-sort-amount-down"></i></div><h4>Sort by Engagement</h4><p>តម្រៀបតាម Likes, Comments</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-calendar-alt"></i></div><h4>Sort by Date</h4><p>តម្រៀបតាមកាលបរិច្ឆេទ</p></div>
+                    <div class="fcard"><div class="ficon"><i class="fas fa-users"></i></div><h4>Follower Count</h4><p>មើលចំនួន Followers</p></div>
+                </div>
+                <div id="feat-pro" class="features-grid feat-content">
+                    <div class="fcard pro"><div class="ficon"><i class="fas fa-user-friends"></i></div><h4>Profile Grabber</h4><p>ទាញយកវីដេអូទាំងអស់ពី Profile</p></div>
+                    <div class="fcard pro"><div class="ficon"><i class="fas fa-id-card"></i></div><h4>Username/ID Input</h4><p>បញ្ចូល username ឬ ID ប៉ុណ្ណោះ</p></div>
+                    <div class="fcard pro"><div class="ficon"><i class="fas fa-database"></i></div><h4>Data for Analyst</h4><p>ទិន្នន័យសម្រាប់វិភាគ</p></div>
+                    <div class="fcard pro"><div class="ficon"><i class="fas fa-magic"></i></div><h4>Watermark Removal</h4><p>លុបស្នាមទឹកដោយស្វ័យប្រវត្តិ</p></div>
+                    <div class="fcard pro"><div class="ficon"><i class="fas fa-chart-pie"></i></div><h4>Data Analytics</h4><p>វិភាគទិន្នន័យគ្រប់ជ្រុង</p></div>
+                </div>
+                <div id="feat-advanced" class="features-grid feat-content">
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-film"></i></div><h4>Reel Download</h4><p>ទាញយក Reels/Shorts</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-comments"></i></div><h4>Comments Scraping</h4><p>ទាញយក Comments ទាំងអស់</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-hashtag"></i></div><h4>Hashtag Scraping</h4><p>ស្វែងរកតាម Hashtag</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-search"></i></div><h4>Search by Keywords</h4><p>ស្វែងរកតាមពាក្យគន្លឹះ</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-language"></i></div><h4>Content Translation</h4><p>បកប្រែមាតិកា</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-chart-bar"></i></div><h4>Engagement Metrics</h4><p>វាស់វែង Engagement</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-fire"></i></div><h4>Sort by Popularity</h4><p>តម្រៀបតាមប្រជាប្រិយភាព</p></div>
+                    <div class="fcard adv"><div class="ficon"><i class="fas fa-sliders-h"></i></div><h4>Filter by Range</h4><p>ត្រង Engagement Range</p></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== TAB 2: Profile Grabber ===== -->
+        <div id="tab-profile" class="tab-content">
+            <section class="input-section">
+                <div class="input-card">
+                    <div class="platform-selector">
+                        <span class="ps-label">Platform:</span>
+                        <div class="ps-badges" id="profilePlatformBadges">
+                            <button class="ps-badge active" data-plat="tiktok" style="--pc:#fe2c55"><i class="fab fa-tiktok"></i></button>
+                            <button class="ps-badge" data-plat="douyin" style="--pc:#00f0ff"><i class="fas fa-music"></i></button>
+                            <button class="ps-badge" data-plat="youtube" style="--pc:#ff0000"><i class="fab fa-youtube"></i></button>
+                            <button class="ps-badge" data-plat="instagram" style="--pc:#e4405f"><i class="fab fa-instagram"></i></button>
+                            <button class="ps-badge" data-plat="facebook" style="--pc:#1877f2"><i class="fab fa-facebook"></i></button>
+                            <button class="ps-badge" data-plat="twitter" style="--pc:#aaa"><i class="fab fa-x-twitter"></i></button>
+                            <button class="ps-badge" data-plat="pinterest" style="--pc:#bd081c"><i class="fab fa-pinterest"></i></button>
+                            <button class="ps-badge" data-plat="xiaohongshu" style="--pc:#ff2442"><i class="fas fa-book"></i></button>
+                            <button class="ps-badge" data-plat="threads" style="--pc:#000"><i class="fab fa-threads"></i></button>
+                            <button class="ps-badge" data-plat="linkedin" style="--pc:#0077b5"><i class="fab fa-linkedin"></i></button>
+                            <button class="ps-badge" data-plat="reddit" style="--pc:#ff4500"><i class="fab fa-reddit"></i></button>
+                            <button class="ps-badge" data-plat="bilibili" style="--pc:#00a1d6"><i class="fab fa-bilibili"></i></button>
+                    
+                            <button class="ps-badge" data-plat="sora" style="--pc:#a259ff"><i class="fas fa-wand-magic-sparkles"></i></button>
+                        </div>
+                    </div>
+                    <div class="input-wrapper">
+                        <div class="input-icon"><i class="fas fa-user-circle"></i></div>
+                        <input type="text" id="profileUrlInput" placeholder="បិទភ្ជាប់តំណ Profile URL ឬ Username..." autocomplete="off">
+                        <button id="profilePasteBtn" class="icon-btn" title="Paste"><i class="fas fa-paste"></i></button>
+                        <button id="profileClearBtn" class="icon-btn" title="Clear" style="display:none"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="grab-options">
+                        <label class="opt"><span>ចំនួន:</span>
+                            <select id="maxVideosSelect" class="opt-sel">
+                                <option value="0">ទាំងអស់</option>
+                                <option value="20">20</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="500">500</option>
+                                <option value="10000">10000</option>
+                                <option value="20000">20000</option>
+                                <option value="2000000">2000000</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button id="grabBtn" class="primary-btn grab"><i class="fas fa-magnet"></i><span>Grab All Posts</span></button>
+                    
+                    <!-- Facebook Cookie Helper -->
+                    <div id="fbCookieHelper" class="cookie-helper" style="display:none">
+                        <div class="cookie-banner">
+                            <i class="fas fa-cookie-bite"></i>
+                            <div class="cookie-info">
+                                <strong>Facebook ត្រូវការ Cookies</strong>
+                                <p>Upload cookies.txt ដើម្បី grab វីដេអូពី Facebook Profile</p>
+                            </div>
+                            <label class="cookie-upload-btn">
+                                <i class="fas fa-upload"></i> Upload cookies.txt
+                                <input type="file" id="cookieFileInput" accept=".txt" style="display:none">
+                            </label>
+                            <span id="cookieStatus" class="cookie-status"></span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <section id="profileLoadingSection" class="state-section" style="display:none">
+                <div class="state-card">
+                    <div class="spinner"><div class="spinner-ring"></div><i class="fas fa-user-circle spinner-icon"></i></div>
+                    <p id="profileLoadingText" class="state-text">កំពុងស្វែងរក...</p>
+                    <p id="profileLoadingCount" class="loading-count" style="display:none"></p>
+                </div>
+            </section>
+
+            <section id="profileErrorSection" class="state-section" style="display:none">
+                <div class="state-card error">
+                    <div class="state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <p id="profileErrorMessage" class="state-text"></p>
+                    <button id="profileRetryBtn" class="secondary-btn"><i class="fas fa-redo"></i> ព្យាយាមម្តងទៀត</button>
+                </div>
+            </section>
+
+            <section id="profileResultSection" class="profile-result" style="display:none">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-top">
+                        <img id="profileAvatar" class="profile-avatar" src="" alt="">
+                        <div class="profile-details">
+                            <h3 id="profileNickname"></h3>
+                            <p id="profileUsername" class="profile-uname"></p>
+                            <p id="profileSignature" class="profile-sig"></p>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="pstat"><span class="pstat-val" id="statVideos">0</span><span class="pstat-lbl">Posts</span></div>
+                        <div class="pstat"><span class="pstat-val" id="statFollowers">0</span><span class="pstat-lbl">Followers</span></div>
+                        <div class="pstat"><span class="pstat-val" id="statFollowing">0</span><span class="pstat-lbl">Following</span></div>
+                        <div class="pstat"><span class="pstat-val" id="statLikes">0</span><span class="pstat-lbl">Likes</span></div>
+                    </div>
+                </div>
+
+                <!-- Analytics Dashboard (toggle) -->
+                <div class="analytics-toggle">
+                    <button id="toggleAnalyticsBtn" class="secondary-btn"><i class="fas fa-chart-bar"></i> Data Analytics</button>
+                </div>
+                <div id="analyticsPanel" class="analytics-panel" style="display:none">
+                    <div class="analytics-grid">
+                        <div class="acard"><div class="acard-icon"><i class="fas fa-eye"></i></div><div class="acard-data"><span class="acard-val" id="anaAvgViews">0</span><span class="acard-lbl">Avg Views</span></div></div>
+                        <div class="acard"><div class="acard-icon"><i class="fas fa-heart"></i></div><div class="acard-data"><span class="acard-val" id="anaAvgLikes">0</span><span class="acard-lbl">Avg Likes</span></div></div>
+                        <div class="acard"><div class="acard-icon"><i class="fas fa-comment"></i></div><div class="acard-data"><span class="acard-val" id="anaAvgComments">0</span><span class="acard-lbl">Avg Comments</span></div></div>
+                        <div class="acard"><div class="acard-icon"><i class="fas fa-fire"></i></div><div class="acard-data"><span class="acard-val" id="anaEngRate">0%</span><span class="acard-lbl">Engagement</span></div></div>
+                        <div class="acard"><div class="acard-icon"><i class="fas fa-trophy"></i></div><div class="acard-data"><span class="acard-val" id="anaTopViews">0</span><span class="acard-lbl">Top Views</span></div></div>
+                        <div class="acard"><div class="acard-icon"><i class="fas fa-star"></i></div><div class="acard-data"><span class="acard-val" id="anaTopLikes">0</span><span class="acard-lbl">Top Likes</span></div></div>
+                    </div>
+                </div>
+
+                <!-- Toolbar: Sort / Filter -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <span id="videoCountLabel" class="count-label">0 posts</span>
+                        <div class="sort-group">
+                            <label>Sort:</label>
+                            <select id="sortSelect" class="opt-sel">
+                                <option value="default">Default</option>
+                                <option value="likes_desc">Likes ↓</option>
+                                <option value="likes_asc">Likes ↑</option>
+                                <option value="views_desc">Views ↓</option>
+                                <option value="views_asc">Views ↑</option>
+                                <option value="comments_desc">Comments ↓</option>
+                                <option value="date_desc">Date ↓</option>
+                                <option value="date_asc">Date ↑</option>
+                                <option value="engagement_desc">Engagement ↓</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Filter Likes:</label>
+                            <input type="number" id="filterMinLikes" class="filter-input" placeholder="Min" min="0">
+                            <span>-</span>
+                            <input type="number" id="filterMaxLikes" class="filter-input" placeholder="Max" min="0">
+                            <button id="applyFilterBtn" class="icon-btn" title="Apply"><i class="fas fa-filter"></i></button>
+                        </div>
+                    </div>
+                    <div class="toolbar-right">
+                        <button id="selectAllBtn" class="secondary-btn sm"><i class="fas fa-check-double"></i> ជ្រើសរើស</button>
+                        <button id="downloadSelectedBtn" class="primary-btn sm" disabled><i class="fas fa-download"></i> ទាញយក (<span id="selectedCount">0</span>)</button>
+                    </div>
+                </div>
+
+                <!-- Video Grid -->
+                <div id="videoGrid" class="video-grid"></div>
+
+                <!-- Batch Progress -->
+                <section id="batchProgressSection" class="state-section" style="display:none">
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <div class="prog-icon dl"><i class="fas fa-download"></i></div>
+                            <div class="prog-info"><h4 id="batchTitle">Batch Download...</h4><p id="batchStatus" class="prog-sub"></p></div>
+                            <span id="batchPercent" class="prog-pct">0%</span>
+                        </div>
+                        <div class="prog-bar-wrap"><div id="batchBar" class="prog-bar" style="width:0%"></div></div>
+                        <div class="batch-stats">
+                            <span class="bstat ok"><i class="fas fa-check"></i> <span id="batchOK">0</span></span>
+                            <span class="bstat fail"><i class="fas fa-times"></i> <span id="batchFail">0</span></span>
+                            <span class="bstat tot"><i class="fas fa-list"></i> <span id="batchTot">0</span></span>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+
+        <!-- ===== TAB 3: Watermark Remover ===== -->
+        <div id="tab-watermark" class="tab-content">
+            <section class="input-section">
+                <div class="input-card wm-card">
+                    <div class="wm-header">
+                        <div class="wm-icon-wrap"><i class="fas fa-eraser"></i></div>
+                        <h3>Watermark Remover</h3>
+                        <p>លុប Watermark ពី Sora2, TikTok និង វីដេអូផ្សេងទៀត</p>
+                    </div>
+
+                    <!-- Method 1: URL Download + Remove -->
+                    <div class="wm-method">
+                        <div class="wm-method-label"><i class="fas fa-link"></i> ពី URL</div>
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fas fa-link"></i></div>
+                            <input type="text" id="wmUrlInput" placeholder="បិទភ្ជាប់ URL វីដេអូ (Sora2, TikTok, Douyin, Xiaohongshu...)" autocomplete="off">
+                            <button id="wmPasteBtn" class="icon-btn" title="Paste"><i class="fas fa-paste"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Method 2: Upload File -->
+                    <div class="wm-method">
+                        <div class="wm-method-label"><i class="fas fa-upload"></i> Upload ឯកសារ</div>
+                        <label class="wm-upload-area" id="wmUploadArea">
+                            <input type="file" id="wmFileInput" accept="video/*" style="display:none">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span id="wmFileName">ចុចដើម្បីជ្រើសរើសវីដេអូ ឬ អូសដាក់ទីនេះ</span>
+                        </label>
+                    </div>
+
+                    <!-- Watermark Position Options -->
+                    <div class="wm-options">
+                        <div class="wm-option-group">
+                            <label>ទីតាំង Watermark</label>
+                            <div class="wm-positions">
+                                <button class="wm-pos-btn" data-pos="auto" title="រកស្វ័យប្រវត្តិ"><i class="fas fa-magic"></i> Auto</button>
+                                <button class="wm-pos-btn" data-pos="top-left" title="ខាងលើឆ្វេង"><i class="fas fa-arrow-up"></i> ↖</button>
+                                <button class="wm-pos-btn" data-pos="top-right" title="ខាងលើស្ដាំ"><i class="fas fa-arrow-up"></i> ↗</button>
+                                <button class="wm-pos-btn active" data-pos="bottom-left" title="ខាងក្រោមឆ្វេង"><i class="fas fa-arrow-down"></i> ↙</button>
+                                <button class="wm-pos-btn" data-pos="bottom-right" title="ខាងក្រោមស្ដាំ"><i class="fas fa-arrow-down"></i> ↘</button>
+                                <button class="wm-pos-btn" data-pos="bottom-center" title="ខាងក្រោមកណ្ដាល"><i class="fas fa-arrow-down"></i> ↓</button>
+                            </div>
+                        </div>
+                        <div class="wm-option-group">
+                            <label>វិធីសាស្ត្រ</label>
+                            <select id="wmMethod">
+                                <option value="blur" selected>Blur (ព្រិល)</option>
+                                <option value="crop">Crop (កាត់)</option>
+                                <option value="delogo">Delogo (FFmpeg)</option>
+                            </select>
+                        </div>
+                        <div class="wm-option-group">
+                            <label>Blur Strength</label>
+                            <select id="wmBlurStrength">
+                                <option value="10">Light</option>
+                                <option value="20" selected>Normal</option>
+                                <option value="40">Strong</option>
+                                <option value="60">Very Strong</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="wmRemoveBtn" class="primary-btn wm-remove-btn">
+                        <i class="fas fa-magic"></i>
+                        <span>លុប Watermark</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Processing State -->
+            <section id="wmProcessing" class="state-section" style="display:none">
+                <div class="state-card">
+                    <div class="spinner"><div class="spinner-ring"></div><i class="fas fa-eraser spinner-icon"></i></div>
+                    <p class="state-text" id="wmProcessText">កំពុងលុប Watermark...</p>
+                    <div class="wm-progress-bar"><div class="wm-progress-fill" id="wmProgressFill"></div></div>
+                    <p class="wm-progress-label" id="wmProgressLabel">0%</p>
+                </div>
+            </section>
+
+            <!-- Error State -->
+            <section id="wmErrorSection" class="state-section" style="display:none">
+                <div class="state-card error">
+                    <div class="state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <p id="wmErrorMsg" class="state-text"></p>
+                    <button id="wmRetryBtn" class="secondary-btn"><i class="fas fa-redo"></i> ព្យាយាមម្តងទៀត</button>
+                </div>
+            </section>
+
+            <!-- Success State -->
+            <section id="wmSuccessSection" class="state-section" style="display:none">
+                <div class="state-card success">
+                    <div class="state-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3>លុប Watermark បានជោគជ័យ!</h3>
+                    <div class="wm-compare" id="wmCompare">
+                        <div class="wm-compare-item">
+                            <span>មុន</span>
+                            <video id="wmOrigVideo" controls muted style="max-width:100%;border-radius:8px"></video>
+                        </div>
+                        <div class="wm-compare-item">
+                            <span>ក្រោយ</span>
+                            <video id="wmResultVideo" controls muted style="max-width:100%;border-radius:8px"></video>
+                        </div>
+                    </div>
+                    <a id="wmDownloadLink" href="#" class="primary-btn save"><i class="fas fa-save"></i> ទាញយកវីដេអូ</a>
+                    <button id="wmNewBtn" class="secondary-btn"><i class="fas fa-plus"></i> លុប Watermark ថ្មី</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== TAB 5: Sora2 Bulk Download ===== -->
+        <div id="tab-sora2" class="tab-content">
+            <section class="input-section">
+                <div class="input-card sora2-card">
+                    <!-- Hero Header like soravdl.com -->
+                    <div class="sora2-hero">
+                        <div class="sora2-hero-glow"></div>
+                        <div class="sora2-icon-wrap"><i class="fas fa-wand-magic-sparkles"></i></div>
+                        <h3 class="sora2-hero-title">Sora Video Downloader – No Watermark</h3>
+                        <p class="sora2-hero-subtitle">ទាញយកវីដេអូ Sora ភ្លាមៗ ដោយគ្មាន Watermark — Free HD MP4</p>
+                    </div>
+
+                    <!-- Feature Badges -->
+                    <div class="sora2-features">
+                        <div class="sora2-feature-badge">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>No Watermark</span>
+                        </div>
+                        <div class="sora2-feature-badge">
+                            <i class="fas fa-film"></i>
+                            <span>Clean MP4</span>
+                        </div>
+                        <div class="sora2-feature-badge">
+                            <i class="fas fa-expand"></i>
+                            <span>Full HD</span>
+                        </div>
+                        <div class="sora2-feature-badge">
+                            <i class="fas fa-bolt"></i>
+                            <span>Fast</span>
+                        </div>
+                    </div>
+
+                    <!-- Save Location -->
+                    <div class="save-loc-bar">
+                        <div class="save-loc-icon"><i class="fas fa-folder-open"></i></div>
+                        <div class="save-loc-info">
+                            <span class="save-loc-label">ទីតាំងរក្សាទុក</span>
+                            <span class="save-loc-path" id="saveLocPath" title="">D:\Downloads</span>
+                        </div>
+                        <div class="save-loc-stats" id="saveLocStats"></div>
+                        <div class="save-loc-actions">
+                            <button id="saveLocEditBtn" class="save-loc-btn" title="ផ្លាស់ប្ដូរ"><i class="fas fa-pen"></i></button>
+                            <button id="saveLocOpenBtn" class="save-loc-btn" title="បើក Folder"><i class="fas fa-external-link-alt"></i></button>
+                        </div>
+                    </div>
+                    <!-- Save Location Edit Modal -->
+                    <div id="saveLocEdit" class="save-loc-edit" style="display:none">
+                        <div class="save-loc-edit-header">
+                            <i class="fas fa-folder-open"></i>
+                            <span>ផ្លាស់ប្ដូរទីតាំងរក្សាទុក</span>
+                        </div>
+                        <div class="save-loc-edit-body">
+                            <input type="text" id="saveLocInput" class="save-loc-input" placeholder="D:\Downloads" autocomplete="off">
+                        </div>
+                        <div class="save-loc-edit-footer">
+                            <button id="saveLocCancelBtn" class="save-loc-cancel">បោះបង់</button>
+                            <button id="saveLocSaveBtn" class="save-loc-save"><i class="fas fa-check"></i> រក្សាទុក</button>
+                        </div>
+                    </div>
+
+                    <!-- URL Input Area -->
+                    <div class="sora2-url-section">
+                        <div class="sora2-url-label">
+                            <div class="sora2-url-label-left">
+                                <i class="fas fa-link sora2-url-icon"></i>
+                                <span class="sora2-url-title">Sora Video URLs</span>
+                            </div>
+                            <span class="sora2-url-count" id="sora2UrlCount">0 URLs</span>
+                        </div>
+                        <textarea id="sora2UrlInput" class="sora2-textarea" rows="5" placeholder="Paste Sora video URL here (e.g., https://sora.chatgpt.com/p/s_xxxxx)&#10;&#10;បិទភ្ជាប់ Sora URL នីមួយៗក្នុង ១ បន្ទាត់សម្រាប់ Bulk Download"></textarea>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="sora2-actions">
+                        <button id="sora2PasteBtn" class="sora2-action-btn"><i class="fas fa-paste"></i> Paste</button>
+                        <button id="sora2ClearBtn" class="sora2-action-btn"><i class="fas fa-trash-alt"></i> Clear</button>
+                    </div>
+
+                    <!-- Download Button -->
+                    <button id="sora2DownloadBtn" class="sora2-download-btn">
+                        <i class="fas fa-download"></i>
+                        <span>Download Without Watermark</span>
+                    </button>
+
+                    <!-- Quick Stats -->
+                    <div class="sora2-quick-stats">
+                        <div class="sora2-stat-item">
+                            <i class="fas fa-bolt" style="color:#22c55e"></i>
+                            <span>Fast Processing</span>
+                        </div>
+                        <div class="sora2-stat-item">
+                            <i class="fas fa-film" style="color:#60a5fa"></i>
+                            <span>HD Quality</span>
+                        </div>
+                        <div class="sora2-stat-item">
+                            <i class="fas fa-shield-alt" style="color:#a78bfa"></i>
+                            <span>Private & Secure</span>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Note -->
+                    <div class="sora2-compliance">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Please download only your own videos or content you have permission to use.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processing State -->
+            <section id="sora2Processing" class="state-section" style="display:none">
+                <div class="state-card sora2-process-card">
+                    <div class="spinner"><div class="spinner-ring"></div><i class="fas fa-wand-magic-sparkles spinner-icon"></i></div>
+                    <h3 id="sora2ProcessTitle">Processing your video...</h3>
+                    <p class="state-text" id="sora2ProcessText">កំពុង​ស្កេន Sora វីដេអូ...</p>
+                    <div class="sora2-progress-bar"><div class="sora2-progress-fill" id="sora2ProgressFill"></div></div>
+                    <p class="sora2-progress-label" id="sora2ProgressLabel">0 / 0</p>
+                    <p class="sora2-current-url" id="sora2CurrentUrl"></p>
+                </div>
+            </section>
+
+            <!-- Error State -->
+            <section id="sora2ErrorSection" class="state-section" style="display:none">
+                <div class="state-card error">
+                    <div class="state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <p id="sora2ErrorMsg" class="state-text"></p>
+                    <button id="sora2RetryBtn" class="secondary-btn"><i class="fas fa-redo"></i> ព្យាយាមម្ដងទៀត</button>
+                </div>
+            </section>
+
+            <!-- Results State -->
+            <section id="sora2ResultsSection" class="state-section" style="display:none">
+                <div class="sora2-results-ready">
+                    <div class="sora2-ready-icon"><i class="fas fa-check"></i></div>
+                    <h3>Video Ready!</h3>
+                    <p>Preview and download your high‑quality file below</p>
+                </div>
+                <div class="sora2-results-header">
+                    <div class="sora2-nw-badge">
+                        <i class="fas fa-circle-check"></i>
+                        <span>No Watermark</span>
+                        <i class="fas fa-circle-check"></i>
+                    </div>
+                    <p id="sora2ResultsSummary"></p>
+                </div>
+                <div class="sora2-results-grid" id="sora2ResultsGrid">
+                    <!-- Result cards will be injected here -->
+                </div>
+                <div class="sora2-results-actions">
+                    <button id="sora2DownloadAllBtn" class="primary-btn sora2-download-btn"><i class="fas fa-download"></i> Download All</button>
+                    <button id="sora2NewBatchBtn" class="secondary-btn"><i class="fas fa-plus"></i> New Batch</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== TAB 5: Search ===== -->
+        <div id="tab-search" class="tab-content">
+            <section class="input-section">
+                <div class="input-card">
+                    <div class="platform-selector">
+                        <span class="ps-label">Search on:</span>
+                        <div class="ps-badges" id="searchPlatformBadges">
+                            <button class="ps-badge active" data-plat="youtube" style="--pc:#ff0000"><i class="fab fa-youtube"></i> YouTube</button>
+                            <button class="ps-badge" data-plat="tiktok" style="--pc:#fe2c55"><i class="fab fa-tiktok"></i> TikTok</button>
+                            <button class="ps-badge" data-plat="facebook" style="--pc:#1877f2"><i class="fab fa-facebook"></i> Facebook</button>
+                            <button class="ps-badge" data-plat="twitter" style="--pc:#aaa"><i class="fab fa-x-twitter"></i> X/Twitter</button>
+                            <button class="ps-badge" data-plat="pinterest" style="--pc:#bd081c"><i class="fab fa-pinterest"></i> Pinterest</button>
+                        </div>
+                    </div>
+                    <div class="search-type-selector">
+                        <button class="search-type-btn active" data-stype="keyword"><i class="fas fa-search"></i> Keyword</button>
+                        <button class="search-type-btn" data-stype="hashtag"><i class="fas fa-hashtag"></i> Hashtag</button>
+                        <button class="search-type-btn" data-stype="explore"><i class="fas fa-compass"></i> Explore</button>
+                    </div>
+                    <div class="input-wrapper">
+                        <div class="input-icon"><i class="fas fa-search"></i></div>
+                        <input type="text" id="searchInput" placeholder="ស្វែងរកពាក្យគន្លឹះ / Hashtag / Keyword Explore..." autocomplete="off">
+                    </div>
+                    <div class="search-options">
+                        <label class="opt"><span>ចំនួន:</span>
+                            <select id="searchCountSelect" class="opt-sel">
+                                <option value="0">ទាំងអស់</option>
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="500">500</option>
+                                <option value="10000">10000</option>
+                                <option value="20000">20000</option>
+                                <option value="2000000">2000000</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button id="searchBtn" class="primary-btn"><i class="fas fa-search"></i><span>ស្វែងរក</span></button>
+                </div>
+            </section>
+
+            <section id="searchLoadingSection" class="state-section" style="display:none">
+                <div class="state-card">
+                    <div class="spinner"><div class="spinner-ring"></div><i class="fas fa-search spinner-icon"></i></div>
+                    <p class="state-text">កំពុងស្វែងរក...</p>
+                </div>
+            </section>
+
+            <section id="searchResultSection" class="profile-result" style="display:none">
+                <div class="toolbar">
+                    <div class="toolbar-left"><span id="searchCountLabel" class="count-label">0 results</span></div>
+                </div>
+                <div id="searchGrid" class="video-grid"></div>
+                <div id="searchLoadMore" class="load-more-wrap" style="display:none">
+                    <button id="searchLoadMoreBtn" class="secondary-btn load-more-btn"><i class="fas fa-chevron-down"></i> មើលបន្ត...</button>
+                </div>
+            </section>
+        </div>
+
+        <div id="donateModal" class="donate-modal" style="display:none">
+            <div class="donate-modal-overlay"></div>
+            <div class="donate-modal-content">
+                <button class="donate-modal-close" id="donateModalClose"><i class="fas fa-times"></i></button>
+
+                <!-- Step 1: Amount Selection -->
+                <div id="donateFormView">
+                    <div class="donate-header">
+                        <div class="donate-icon-wrap"><i class="fas fa-heart"></i></div>
+                        <h3>គាំទ្រការអំណោយ</h3>
+                        <p>អរគុណដែលជួយគាំទ្រកម្មវិធីនេះ</p>
+                    </div>
+                    <div class="donate-body">
+                        <div class="donate-amounts">
+                            <button class="donate-amount" data-amount="1">$1</button>
+                            <button class="donate-amount active" data-amount="2">$2</button>
+                            <button class="donate-amount" data-amount="5">$5</button>
+                            <button class="donate-amount" data-amount="10">$10</button>
+                        </div>
+                        <div class="donate-amounts" style="margin-top:0">
+                            <button class="donate-amount" data-amount="15">$15</button>
+                            <button class="donate-amount" data-amount="20">$20</button>
+                            <button class="donate-amount" data-amount="25">$25</button>
+                            <button class="donate-amount" data-amount="30">$30</button>
+                        </div>
+                        <div class="donate-custom">
+                            <label>ចំនួនផ្សេងទៀត</label>
+                            <div class="donate-input-wrap">
+                                <span class="donate-currency">$</span>
+                                <input type="number" id="donateAmount" value="2" min="0.5" step="0.5" placeholder="2.00">
+                            </div>
+                        </div>
+                        <button id="donateGenerateBtn" class="donate-submit">
+                            <i class="fas fa-qrcode"></i> បង្កើត QR Code
+                        </button>
+                        <p id="donateError" style="color:#ff6b6b; text-align:center; margin-top:10px; font-size:13px; display:none;"></p>
+                        <div class="donate-methods">
+                            <span><i class="fas fa-shield-halved"></i> Secured by Bakong KHQR</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: QR Code Display -->
+                <div id="donateQRView" style="display:none">
+                    <div class="donate-body" style="padding-top:20px">
+                        <div class="khqr-card">
+                            <div class="khqr-header">
+                                <span>KHQR</span>
+                            </div>
+                            <div class="khqr-info">
+                                <div class="khqr-name" id="khqrMerchant">SMMMEGA</div>
+                                <div class="khqr-amount" id="khqrAmount">2 USD</div>
+                            </div>
+                            <div class="khqr-divider"></div>
+                            <div class="khqr-qr-wrap">
+                                <img id="khqrImage" src="" alt="KHQR Code">
+                            </div>
+                            <div class="khqr-scan-instruction" id="khqrScanMsg" style="display:none;"></div>
+                            <div class="khqr-countdown" id="khqrCountdown">ពេលវេលាដែលនៅសល់: 02:00</div>
+                            <div class="khqr-status" id="khqrStatus">
+                                <i class="fas fa-spinner fa-spin"></i> ស្ថានភាពបង់ប្រាក់: UNPAID
+                            </div>
+                        </div>
+                        <button class="donate-submit khqr-new-btn" id="khqrNewPayment" style="display:none; margin-top:12px;">
+                            <i class="fas fa-redo"></i> បង់ប្រាក់ថ្មី
+                        </button>
+                        <div class="donate-methods" style="margin-top:12px">
+                            <span><i class="fas fa-shield-halved"></i> Secured by Bakong KHQR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sound Effects -->
+        <audio id="soundSuccess" src="{{ url_for('static', filename='sound/success.mp3') }}" preload="auto"></audio>
+        <audio id="soundExpired" src="{{ url_for('static', filename='sound/expired.mp3') }}" preload="auto"></audio>
+
+        <footer class="footer">
+            <p>Powered by <a href="https://web.facebook.com/Mr.SOPHEARUN/" target="_blank">RIN SOPHEARUN</a></p>
+            <p>&copy; 2026 Social Media Downloader — Multi-Platform</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

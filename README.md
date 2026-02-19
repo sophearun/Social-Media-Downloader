@@ -1,165 +1,51 @@
-# WatermarkRemover-AI
+<<<<<<< HEAD
+# Social-Media-Downloader
+Social Media Downloader
+=======
+# TikTok Video Downloader
 
-**AI-Powered Watermark Removal Tool using Florence-2 and LaMA Models**
+កម្មវិធីទាញយកវីដេអូ TikTok ដោយឥតគិតថ្លៃ
 
-🇬🇧 English || 🧠 Brainrot
+## Features / មុខងារ
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+- ទាញយកវីដេអូ TikTok គុណភាពខ្ពស់ (MP4)
+- ទាញយកសម្លេង MP3
+- ចំណុចប្រទាក់ស្អាត ងាយស្រួលប្រើ
+- បង្ហាញព័ត៌មានវីដេអូមុនពេលទាញយក
+- បង្ហាញការរីកចម្រើនការទាញយក
 
----
+## Requirements / តម្រូវការ
 
-## Overview
+- Python 3.8+
+- FFmpeg (ចាំបាច់សម្រាប់ការទាញយកសម្លេង MP3)
 
-`WatermarkRemover-AI` is a cutting-edge application that leverages AI models for precise watermark detection and seamless removal. Perfect for removing watermarks from AI-generated videos like Sora, Sora 2, Runway, and others.
-
-It uses Florence-2 from Microsoft for watermark identification and LaMA for inpainting to fill in the removed regions naturally. The software features a modern GUI built with PyWebview for an accessible and intuitive experience.
-
-## Screenshot
-
-![App Screenshot](assets/screenshot-preview.png)
-
-## Demo
-
-
-https://github.com/user-attachments/assets/505be2a8-8eda-4def-90b6-5a4ceefee456
-
-
----
-
-## Features
-
-- **Smart Detection** - AI-powered watermark detection using Florence-2
-- **Seamless Removal** - LaMA inpainting for natural-looking results
-- **Video Support** - Process videos with two-pass detection and audio preservation
-- **AI Video Ready** - Remove watermarks from Sora, Sora 2, Runway, and other AI-generated videos
-- **Batch Processing** - Handle entire folders at once
-- **Preview Mode** - Preview detected watermarks before processing
-- **Fade In/Out Handling** - Extend masks for watermarks that fade in/out
-- **GPU Acceleration** - CUDA support for faster processing
-- **Multi-Language UI** - Available in English, French, Chinese, Japanese, Portuguese, and more
-- **Themes** - Multiple UI themes to choose from
-
----
-
-## Installation
-
-### Windows
-
-The setup script downloads a portable Python environment automatically - no system Python required.
-
-```powershell
-git clone https://github.com/D-Ogi/WatermarkRemover-AI.git
-cd WatermarkRemover-AI
-.\setup.ps1
-```
-
-After setup, double-click `run.bat` to launch the app.
-
-### Linux / macOS
-
-Requires Python 3.10+ installed on your system.
+## Installation / ការដំឡើង
 
 ```bash
-git clone https://github.com/D-Ogi/WatermarkRemover-AI.git
-cd WatermarkRemover-AI
-chmod +x setup.sh
-./setup.sh
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Install FFmpeg (optional - for MP3 download)
+# Download from: https://ffmpeg.org/download.html
+# Or use: winget install ffmpeg
+
+# 3. Run the application
+python app.py
 ```
 
-After setup, run `./run.sh` to launch the app.
+## Usage / ការប្រើប្រាស់
 
-### Optional: FFmpeg
+1. Run `python app.py`
+2. Open browser: http://localhost:5000
+3. Paste TikTok video URL
+4. Click "ស្វែងរកវីដេអូ" (Search Video)
+5. Choose to download video (MP4) or audio (MP3)
+6. Wait for download to complete
+7. Click "រក្សាទុកឯកសារ" (Save File) to save
 
-Install FFmpeg to preserve audio when processing videos:
-- **Windows**: Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
-- **Linux**: `sudo apt install ffmpeg`
-- **macOS**: `brew install ffmpeg`
+## Supported URLs / URL ដែលទាកើត
 
----
-
-## Usage
-
-### GUI Mode
-
-1. Run the app (`run.bat` on Windows, `./run.sh` on macOS/Linux)
-2. Select your preferred language and theme from the top-right corner
-3. Select your mode (Single File or Batch)
-4. Set input and output paths
-5. Configure settings as needed
-6. Hit **Start Processing**
-
-Your settings are automatically saved and restored on next launch.
-
-### CLI Mode
-
-```bash
-# Basic usage
-python remwm.py input.png output_folder/
-
-# With options
-python remwm.py ./images ./output --overwrite --max-bbox-percent=15 --force-format=PNG
-
-# Process video with two-pass detection
-python remwm.py video.mp4 ./output --detection-skip=3 --fade-in=0.5 --fade-out=0.5
-
-# Preview mode (detect without processing)
-python remwm.py input.png --preview
-```
-
-### CLI Options
-
-| Option | Description |
-|--------|-------------|
-| `--overwrite` | Overwrite existing files |
-| `--transparent` | Make watermark regions transparent (images only) |
-| `--max-bbox-percent` | Max detection size as % of image (default: 10) |
-| `--force-format` | Force output format (PNG, WEBP, JPG, MP4, AVI) |
-| `--detection-prompt` | Custom detection prompt (default: "watermark") |
-| `--detection-skip` | Detect every N frames for videos (1-10, default: 1) |
-| `--fade-in` | Extend mask backwards by N seconds (for fade-in watermarks) |
-| `--fade-out` | Extend mask forwards by N seconds (for fade-out watermarks) |
-| `--preview` | Preview detected watermarks without processing |
-
----
-
-## Video Processing
-
-- **Supported formats:** MP4, AVI, MOV, MKV, FLV, WMV, WEBM
-- **Audio preservation:** Requires FFmpeg installed
-- **Two-pass mode:** Faster processing with `--detection-skip` > 1
-- **Fade handling:** Use `--fade-in` / `--fade-out` for watermarks that appear/disappear gradually
-
----
-
-## Tech Stack
-
-- **Florence-2** - Microsoft's vision model for watermark detection
-- **LaMA** - Large Mask Inpainting model
-- **PyWebview** - Cross-platform webview wrapper
-- **Alpine.js** - Lightweight JavaScript framework for UI
-- **PyTorch** - Deep learning backend
-
----
-
-## Contributing
-
-Contributions are welcome! Feel free to:
-
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=D-Ogi/WatermarkRemover-AI&type=date&legend=top-left)](https://www.star-history.com/#D-Ogi/WatermarkRemover-AI&type=date&legend=top-left)
-
-
-
+- `https://www.tiktok.com/@user/video/1234567890`
+- `https://vm.tiktok.com/XXXXXXXX`
+- `https://vt.tiktok.com/XXXXXXXX`
+>>>>>>> d369438 (Initial deployment: Social Media Downloader production code)
