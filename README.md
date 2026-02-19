@@ -2,7 +2,7 @@
 
 **AI-Powered Watermark Removal Tool using Florence-2 and LaMA Models**
 
-🇬🇧 English | 🇫🇷 Français | 🇨🇳 中文 | 🇯🇵 日本語 | 🇧🇷 Português | 🧠 Brainrot
+🇬🇧 English || 🧠 Brainrot
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -160,5 +160,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=D-Ogi/WatermarkRemover-AI&type=date&legend=top-left)](https://www.star-history.com/#D-Ogi/WatermarkRemover-AI&type=date&legend=top-left)
+
 
 
