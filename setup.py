@@ -19,7 +19,7 @@ setup(
     ],
     python_requires=">=3.7",
     install_requires=[
-        "yt-dlp>=2023.10.13",
+        "yt-dlp>=2024.10.0",
         "requests>=2.31.0",
     ],
     entry_points={

@@ -131,8 +131,8 @@ Supported Platforms:
     
     # Check if URL is supported
     if not downloader.is_url_supported(args.url):
-        print(f"Warning: The URL might not be from a supported platform.")
-        print("Attempting to download anyway...\n")
+        print(f"Warning: The URL does not appear to be from a recognized platform.")
+        print("yt-dlp will attempt to download it anyway...\n")
     
     try:
         if args.info:

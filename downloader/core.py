@@ -167,8 +167,23 @@ class SocialMediaDownloader:
         Returns:
             True if supported, False otherwise
         """
+        import re
         url_lower = url.lower()
-        for platform in self.SUPPORTED_PLATFORMS:
-            if platform in url_lower:
+        
+        # More specific domain-based matching patterns
+        platform_patterns = [
+            r'youtube\.com|youtu\.be',
+            r'twitter\.com|x\.com',
+            r'instagram\.com',
+            r'tiktok\.com',
+            r'facebook\.com|fb\.watch',
+            r'reddit\.com',
+            r'vimeo\.com',
+            r'dailymotion\.com',
+            r'twitch\.tv',
+        ]
+        
+        for pattern in platform_patterns:
+            if re.search(pattern, url_lower):
                 return True
         return False
