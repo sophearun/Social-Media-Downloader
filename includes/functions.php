@@ -11,7 +11,7 @@ function sanitize(string $str): string {
 }
 
 /** Format large numbers: 1200 → 1.2K, 3500000 → 3.5M */
-function formatNumber(int|float $n): string {
+function formatNumber($n): string {
     if ($n >= 1_000_000) return round($n / 1_000_000, 1) . 'M';
     if ($n >= 1_000)     return round($n / 1_000, 1) . 'K';
     return (string) $n;
@@ -46,25 +46,25 @@ function generateAvatar(string $name, int $size = 80): string {
 /** Detect the social platform from a URL string. */
 function detectPlatform(string $url): string {
     $u = strtolower($url);
-    if (str_contains($u, 'tiktok.com'))                              return 'tiktok';
-    if (str_contains($u, 'douyin.com'))                              return 'douyin';
-    if (str_contains($u, 'youtube.com') || str_contains($u, 'youtu.be')) return 'youtube';
-    if (str_contains($u, 'instagram.com'))                           return 'instagram';
-    if (str_contains($u, 'facebook.com') || str_contains($u, 'fb.watch') || str_contains($u, 'fb.com')) return 'facebook';
-    if (str_contains($u, 'twitter.com') || str_contains($u, 'x.com')) return 'twitter';
-    if (str_contains($u, 'pinterest.com') || str_contains($u, 'pin.it')) return 'pinterest';
-    if (str_contains($u, 'kuaishou.com') || str_contains($u, 'kwai.com')) return 'kuaishou';
-    if ((str_contains($u, 'openai.com') && str_contains($u, 'sora')) || str_contains($u, 'sora.com')) return 'sora';
-    if (str_contains($u, 'xiaohongshu.com') || str_contains($u, 'xhslink.com')) return 'xiaohongshu';
-    if (str_contains($u, 'threads.net'))                             return 'threads';
-    if (str_contains($u, 'linkedin.com'))                            return 'linkedin';
-    if (str_contains($u, 'reddit.com') || str_contains($u, 'redd.it')) return 'reddit';
-    if (str_contains($u, 'bilibili.com') || str_contains($u, 'b23.tv')) return 'bilibili';
-    if (str_contains($u, 'weibo.com') || str_contains($u, 'weibo.cn')) return 'weibo';
-    if (str_contains($u, 'lemon8'))                                  return 'lemon8';
-    if (str_contains($u, 'zhihu.com'))                               return 'zhihu';
-    if (str_contains($u, 'weixin.qq.com') || str_contains($u, 'mp.weixin')) return 'wechat';
-    if (str_contains($u, 'pipix.com') || str_contains($u, 'pipixia')) return 'pipixia';
+    if (strpos($u, 'tiktok.com') !== false)                                       return 'tiktok';
+    if (strpos($u, 'douyin.com') !== false)                                       return 'douyin';
+    if (strpos($u, 'youtube.com') !== false || strpos($u, 'youtu.be') !== false)  return 'youtube';
+    if (strpos($u, 'instagram.com') !== false)                                    return 'instagram';
+    if (strpos($u, 'facebook.com') !== false || strpos($u, 'fb.watch') !== false || strpos($u, 'fb.com') !== false) return 'facebook';
+    if (strpos($u, 'twitter.com') !== false || strpos($u, 'x.com') !== false)     return 'twitter';
+    if (strpos($u, 'pinterest.com') !== false || strpos($u, 'pin.it') !== false)  return 'pinterest';
+    if (strpos($u, 'kuaishou.com') !== false || strpos($u, 'kwai.com') !== false) return 'kuaishou';
+    if ((strpos($u, 'openai.com') !== false && strpos($u, 'sora') !== false) || strpos($u, 'sora.com') !== false) return 'sora';
+    if (strpos($u, 'xiaohongshu.com') !== false || strpos($u, 'xhslink.com') !== false) return 'xiaohongshu';
+    if (strpos($u, 'threads.net') !== false)                                      return 'threads';
+    if (strpos($u, 'linkedin.com') !== false)                                     return 'linkedin';
+    if (strpos($u, 'reddit.com') !== false || strpos($u, 'redd.it') !== false)   return 'reddit';
+    if (strpos($u, 'bilibili.com') !== false || strpos($u, 'b23.tv') !== false)  return 'bilibili';
+    if (strpos($u, 'weibo.com') !== false || strpos($u, 'weibo.cn') !== false)   return 'weibo';
+    if (strpos($u, 'lemon8') !== false)                                           return 'lemon8';
+    if (strpos($u, 'zhihu.com') !== false)                                        return 'zhihu';
+    if (strpos($u, 'weixin.qq.com') !== false || strpos($u, 'mp.weixin') !== false) return 'wechat';
+    if (strpos($u, 'pipix.com') !== false || strpos($u, 'pipixia') !== false)    return 'pipixia';
     return 'unknown';
 }
 

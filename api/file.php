@@ -23,7 +23,7 @@ $filepath = sys_get_temp_dir() . '/smd_downloads/' . $taskId . '/' . $filename;
 $realpath = realpath($filepath);
 $baseDir  = realpath(sys_get_temp_dir() . '/smd_downloads/' . $taskId);
 
-if ($realpath === false || $baseDir === false || !str_starts_with($realpath, $baseDir . DIRECTORY_SEPARATOR)) {
+if ($realpath === false || $baseDir === false || strpos($realpath, $baseDir . DIRECTORY_SEPARATOR) !== 0) {
     http_response_code(403);
     die('Access denied.');
 }

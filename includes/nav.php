@@ -15,7 +15,7 @@ function _navActive(string $path): string {
     if ($normalized === '/') {
         return $_currentPath === '/' ? 'nav-active' : '';
     }
-    return str_starts_with($_currentPath, $normalized) ? 'nav-active' : '';
+    return (strpos($_currentPath, $normalized) === 0) ? 'nav-active' : '';
 }
 ?>
 <nav class="admin-nav" role="navigation" aria-label="Main navigation">

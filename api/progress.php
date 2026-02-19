@@ -26,8 +26,8 @@ $filename  = '';
 foreach ($files as $f) {
     $base = basename($f);
     if ($base === 'task.json') continue;
-    if (str_ends_with($base, '.part'))  continue;
-    if (str_ends_with($base, '.ytdl'))  continue;
+    if (substr($base, -5) === '.part') continue;
+    if (substr($base, -5) === '.ytdl') continue;
     // Non-partial, non-metadata file found — download complete
     $completed = true;
     $filename  = $base;

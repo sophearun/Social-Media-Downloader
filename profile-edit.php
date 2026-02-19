@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($_FILES['avatar']['size'] > 2 * 1024 * 1024) {
             $errors[] = 'Avatar must be under 2 MB.';
         } else {
-            if (!is_dir(AVATAR_DIR)) mkdir(AVATAR_DIR, 0750, true);
+            if (!is_dir(AVATAR_DIR)) mkdir(AVATAR_DIR, 0700, true);
             $ext        = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
             $newName    = 'avatar_' . $user['id'] . '_' . time() . '.' . $ext;
             $destPath   = AVATAR_DIR . $newName;

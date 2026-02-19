@@ -1,8 +1,14 @@
 <?php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'social_downloader');
+/**
+ * Database configuration.
+ * Override values using environment variables for production:
+ *   DB_HOST, DB_USER, DB_PASS, DB_NAME
+ * Or copy config/db.php to config/db.local.php (gitignored) and set values there.
+ */
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'social_downloader');
 
 function getDB(): PDO {
     static $pdo = null;
